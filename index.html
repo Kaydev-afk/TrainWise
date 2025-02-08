@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrainWise - Fitness Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* (Existing CSS styling here) */
+    </style>
+</head>
+<body>
+    <header>
+        <h1>TrainWise</h1>
+    </header>
+
+    <nav>
+        <button onclick="showSection('workouts')">Workouts</button>
+        <button onclick="showSection('diet')">Diet Plan</button>
+        <button onclick="showSection('goals')">Goals</button>
+    </nav>
+
+    <main>
+        <!-- Workouts Section -->
+        <section id="workouts" class="active">
+            <h2>Workout Plan</h2>
+            <select id="workoutDay">
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+            <input type="text" id="workoutInput" placeholder="Exercise">
+            <input type="number" id="weightInput" placeholder="Weight (lbs)">
+            <button onclick="addWorkout()">Add Workout</button>
+
+            <div class="calendar">
+                <div class="day" id="Monday"><h3>Monday</h3></div>
+                <div class="day" id="Tuesday"><h3>Tuesday</h3></div>
+                <div class="day" id="Wednesday"><h3>Wednesday</h3></div>
+                <div class="day" id="Thursday"><h3>Thursday</h3></div>
+                <div class="day" id="Friday"><h3>Friday</h3></div>
+                <div class="day" id="Saturday"><h3>Saturday</h3></div>
+                <div class="day" id="Sunday"><h3>Sunday</h3></div>
+            </div>
+        </section>
+
+        <!-- Diet Plan Section -->
+        <section id="diet">
+            <h2>Diet Plan</h2>
+            <input type="text" id="mealInput" placeholder="Meal">
+            <input type="number" id="caloriesInput" placeholder="Calories">
+            <input type="number" id="proteinInput" placeholder="Protein (g)">
+            <button onclick="addMeal()">Add Meal</button>
+            <div id="mealList"></div>
+        </section>
+
+        <!-- Goals Section -->
+        <section id="goals">
+            <h2>Goals</h2>
+            <input type="text" id="goalInput" placeholder="Goal">
+            <label>
+                <input type="checkbox" id="setTimer"> Set a timer
+            </label>
+            <input type="date" id="goalDate" disabled>
+            <button onclick="addGoal()">Add Goal</button>
+            <div id="goalList"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 TrainWise. All rights reserved.</p>
+    </footer>
+
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: #0f0;
+            text-align: center;
+        }
+    
+        /* Header */
+        header {
+            background-color: #000;
+            padding: 20px;
+            font-size: 24px;
+        }
+    
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background-color: #222;
+            padding: 10px;
+        }
+    
+        button {
+            background-color: #0f0;
+            color: #111;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+    
+        button:hover {
+            background-color: #0a0;
+        }
+    
+        /* Sections */
+        section {
+            display: none;
+            padding: 20px;
+        }
+    
+        .active {
+            display: block;
+        }
+    
+        /* Weekly Calendar */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+    
+        .day {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 150px;
+        }
+    
+        .workout-item, .meal-item {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+    
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        /* Footer */
+        footer {
+            background-color: #000;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #0f0;
+        }
+    </style>
+    
+
+    <script>
+        // Show section based on button click
+        function showSection(sectionId) {
+            document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+            document.getElementById(sectionId).classList.add("active");
+        }
+
+        // Add workout and save to localStorage
+        function addWorkout() {
+            let day = document.getElementById("workoutDay").value;
+            let exercise = document.getElementById("workoutInput").value;
+            let weight = document.getElementById("weightInput").value;
+
+            if (exercise.trim() !== "" && weight.trim() !== "") {
+                let dayContainer = document.getElementById(day);
+                let div = document.createElement("div");
+                div.classList.add("workout-item");
+                div.innerHTML = `<span>${exercise} - ${weight} lbs</span> 
+                                <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+
+                dayContainer.appendChild(div);
+
+                // Save to localStorage
+                saveWorkouts();
+            }
+        }
+
+        // Save workouts to localStorage
+        function saveWorkouts() {
+            let workouts = {};
+            document.querySelectorAll('.calendar .day').forEach(day => {
+                let dayName = day.id;
+                workouts[dayName] = [];
+                day.querySelectorAll('.workout-item').forEach(item => {
+                    workouts[dayName].push(item.innerText);
+                });
+            });
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+        }
+
+        // Load workouts from localStorage
+        function loadWorkouts() {
+            let workouts = JSON.parse(localStorage.getItem('workouts'));
+            if (workouts) {
+                Object.keys(workouts).forEach(dayName => {
+                    let dayContainer = document.getElementById(dayName);
+                    workouts[dayName].forEach(workout => {
+                        let div = document.createElement("div");
+                        div.classList.add("workout-item");
+                        div.innerHTML = `<span>${workout}</span> 
+                                        <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                        dayContainer.appendChild(div);
+                    });
+                });
+            }
+        }
+
+        // Add meal and save to localStorage
+        function addMeal() {
+            let meal = document.getElementById("mealInput").value;
+            let calories = document.getElementById("caloriesInput").value;
+            let protein = document.getElementById("proteinInput").value;
+
+            if (meal.trim() !== "" && calories.trim() !== "" && protein.trim() !== "") {
+                let div = document.createElement("div");
+                div.classList.add("meal-item");
+                div.innerHTML = `${meal} - ${calories} kcal - ${protein}g protein 
+                                <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                document.getElementById("mealList").appendChild(div);
+
+                // Save meals to localStorage
+                saveMeals();
+            }
+        }
+
+        // Save meals to localStorage
+        function saveMeals() {
+            let meals = [];
+            document.querySelectorAll('#mealList .meal-item').forEach(item => {
+                meals.push(item.innerText);
+            });
+            localStorage.setItem('meals', JSON.stringify(meals));
+        }
+
+        // Load meals from localStorage
+        function loadMeals() {
+            let meals = JSON.parse(localStorage.getItem('meals'));
+            if (meals) {
+                meals.forEach(meal => {
+                    let div = document.createElement("div");
+                    div.classList.add("meal-item");
+                    div.innerHTML = `${meal} <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                    document.getElementById("mealList").appendChild(div);
+                });
+            }
+        }
+
+        // Add goal and save to localStorage
+        function addGoal() {
+            let goal = document.getElementById("goalInput").value;
+            let setTimer = document.getElementById("setTimer").checked;
+            let goalDate = document.getElementById("goalDate").value;
+
+            let div = document.createElement("div");
+            div.innerHTML = `<strong>${goal}</strong> ${setTimer ? `- Deadline: ${goalDate}` : ""} 
+                            <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+            document.getElementById("goalList").appendChild(div);
+
+            // Save goals to localStorage
+            saveGoals();
+        }
+
+        // Save goals to localStorage
+        function saveGoals() {
+            let goals = [];
+            document.querySelectorAll('#goalList div').forEach(item => {
+                goals.push(item.innerText);
+            });
+            localStorage.setItem('goals', JSON.stringify(goals));
+        }
+
+        // Load goals from localStorage
+        function loadGoals() {
+            let goals = JSON.parse(localStorage.getItem('goals'));
+            if (goals) {
+                goals.forEach(goal => {
+                    let div = document.createElement("div");
+                    div.innerHTML = `${goal} <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                    document.getElementById("goalList").appendChild(div);
+                });
+            }
+        }
+
+        // Initialize page with saved data
+        window.onload = function() {
+            loadWorkouts();
+            loadMeals();
+            loadGoals();
+        }
+
+        // Handle timer checkbox toggle
+        document.getElementById("setTimer").addEventListener("change", function() {
+            document.getElementById("goalDate").disabled = !this.checked;
+        });
+    </script>
+</body>
+</html>
