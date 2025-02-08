@@ -3,15 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackPro - Fitness Planner</title>
+    <title>TrainWise - Fitness Planner</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        /* (Existing CSS styling here) */
+        /* General Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: #0f0;
+            text-align: center;
+        }
+    
+        /* Header */
+        header {
+            background-color: #000;
+            padding: 20px;
+            font-size: 24px;
+            color: #0f0;
+            text-align: center;
+        }
+    
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background-color: #222;
+            padding: 10px;
+            flex-wrap: wrap;
+        }
+    
+        button {
+            background-color: #0f0;
+            color: #111;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 10px;
+            font-weight: 600;
+            min-width: 100px;
+            font-size: 16px;
+        }
+    
+        button:hover {
+            background-color: #0a0;
+        }
+    
+        /* Sections */
+        section {
+            display: none;
+            padding: 20px;
+        }
+    
+        .active {
+            display: block;
+        }
+    
+        /* Weekly Calendar */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            padding: 20px;
+        }
+    
+        .day {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 150px;
+        }
+
+        /* Form Inputs */
+        input, select, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #0f0;
+        }
+
+        input[type="text"], input[type="number"], input[type="date"], select {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        /* Workout Items */
+        .workout-item, .meal-item {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+    
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
+        /* Footer */
+        footer {
+            background-color: #000;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #0f0;
+        }
+
+        /* Mobile Responsiveness */
+        @media screen and (max-width: 768px) {
+            header {
+                font-size: 20px;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .calendar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .day {
+                min-height: 120px;
+                padding: 10px;
+            }
+
+            input, select, button {
+                width: 90%;
+                font-size: 14px;
+            }
+
+            .workout-item, .meal-item {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            header {
+                font-size: 18px;
+            }
+
+            .calendar {
+                grid-template-columns: 1fr;
+            }
+
+            .day {
+                min-height: 100px;
+                padding: 8px;
+            }
+
+            input, select, button {
+                width: 90%;
+                font-size: 13px;
+            }
+
+            .workout-item, .meal-item {
+                font-size: 12px;
+                padding: 7px;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>TrackPro</h1>
+        <h1>TrainWise</h1>
     </header>
 
     <nav>
@@ -35,6 +210,7 @@
             </select>
             <input type="text" id="workoutInput" placeholder="Exercise">
             <input type="number" id="weightInput" placeholder="Weight (lbs)">
+            <input type="number" id="repsInput" placeholder="Reps">
             <button onclick="addWorkout()">Add Workout</button>
 
             <div class="calendar">
@@ -72,107 +248,8 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 TrackPro. All rights reserved.</p>
+        <p>&copy; 2025 TrainWise. All rights reserved.</p>
     </footer>
-
-    <style>
-        /* General Styling */
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #111;
-            color: #0f0;
-            text-align: center;
-        }
-    
-        /* Header */
-        header {
-            background-color: #000;
-            padding: 20px;
-            font-size: 24px;
-        }
-    
-        /* Navigation */
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            background-color: #222;
-            padding: 10px;
-        }
-    
-        button {
-            background-color: #0f0;
-            color: #111;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-    
-        button:hover {
-            background-color: #0a0;
-        }
-    
-        /* Sections */
-        section {
-            display: none;
-            padding: 20px;
-        }
-    
-        .active {
-            display: block;
-        }
-    
-        /* Weekly Calendar */
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 10px;
-            padding: 20px;
-        }
-    
-        .day {
-            background-color: #222;
-            padding: 15px;
-            border-radius: 10px;
-            min-height: 150px;
-        }
-    
-        .workout-item, .meal-item {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 14px;
-        }
-    
-        .delete-btn {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-    
-        /* Footer */
-        footer {
-            background-color: #000;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            color: #0f0;
-        }
-    </style>
-    
 
     <script>
         // Show section based on button click
@@ -186,12 +263,13 @@
             let day = document.getElementById("workoutDay").value;
             let exercise = document.getElementById("workoutInput").value;
             let weight = document.getElementById("weightInput").value;
+            let reps = document.getElementById("repsInput").value;
 
-            if (exercise.trim() !== "" && weight.trim() !== "") {
+            if (exercise.trim() !== "" && weight.trim() !== "" && reps.trim() !== "") {
                 let dayContainer = document.getElementById(day);
                 let div = document.createElement("div");
                 div.classList.add("workout-item");
-                div.innerHTML = `<span>${exercise} - ${weight} lbs</span> 
+                div.innerHTML = `<span>${exercise} - ${weight} lbs - ${reps} reps</span> 
                                 <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
 
                 dayContainer.appendChild(div);
@@ -240,8 +318,8 @@
             if (meal.trim() !== "" && calories.trim() !== "" && protein.trim() !== "") {
                 let div = document.createElement("div");
                 div.classList.add("meal-item");
-                div.innerHTML = `${meal} - ${calories} kcal - ${protein}g protein 
-                                <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                div.innerHTML = `<span>${meal} - ${calories} calories - ${protein}g protein</span>
+                                 <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
                 document.getElementById("mealList").appendChild(div);
 
                 // Save meals to localStorage
@@ -252,7 +330,7 @@
         // Save meals to localStorage
         function saveMeals() {
             let meals = [];
-            document.querySelectorAll('#mealList .meal-item').forEach(item => {
+            document.querySelectorAll('.meal-item').forEach(item => {
                 meals.push(item.innerText);
             });
             localStorage.setItem('meals', JSON.stringify(meals));
@@ -265,7 +343,8 @@
                 meals.forEach(meal => {
                     let div = document.createElement("div");
                     div.classList.add("meal-item");
-                    div.innerHTML = `${meal} <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                    div.innerHTML = `${meal}
+                                     <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
                     document.getElementById("mealList").appendChild(div);
                 });
             }
@@ -274,22 +353,22 @@
         // Add goal and save to localStorage
         function addGoal() {
             let goal = document.getElementById("goalInput").value;
-            let setTimer = document.getElementById("setTimer").checked;
             let goalDate = document.getElementById("goalDate").value;
-
-            let div = document.createElement("div");
-            div.innerHTML = `<strong>${goal}</strong> ${setTimer ? `- Deadline: ${goalDate}` : ""} 
-                            <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
-            document.getElementById("goalList").appendChild(div);
-
-            // Save goals to localStorage
-            saveGoals();
+            if (goal.trim() !== "") {
+                let div = document.createElement("div");
+                div.classList.add("goal-item");
+                div.innerHTML = `<span>${goal} ${goalDate ? `by ${goalDate}` : ""}</span>
+                                 <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                document.getElementById("goalList").appendChild(div);
+                // Save goals to localStorage
+                saveGoals();
+            }
         }
 
         // Save goals to localStorage
         function saveGoals() {
             let goals = [];
-            document.querySelectorAll('#goalList div').forEach(item => {
+            document.querySelectorAll('.goal-item').forEach(item => {
                 goals.push(item.innerText);
             });
             localStorage.setItem('goals', JSON.stringify(goals));
@@ -301,23 +380,20 @@
             if (goals) {
                 goals.forEach(goal => {
                     let div = document.createElement("div");
-                    div.innerHTML = `${goal} <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
+                    div.classList.add("goal-item");
+                    div.innerHTML = `${goal}
+                                     <button class="delete-btn" onclick="this.parentElement.remove()">🗑️</button>`;
                     document.getElementById("goalList").appendChild(div);
                 });
             }
         }
 
-        // Initialize page with saved data
-        window.onload = function() {
+        // Load saved data on page load
+        window.onload = function () {
             loadWorkouts();
             loadMeals();
             loadGoals();
         }
-
-        // Handle timer checkbox toggle
-        document.getElementById("setTimer").addEventListener("change", function() {
-            document.getElementById("goalDate").disabled = !this.checked;
-        });
     </script>
 </body>
 </html>
