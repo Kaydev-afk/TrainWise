@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TrackPro - Fitness Planner</title>
+    <link rel="icon" href="logo.png" type="image/x-icon"> <!-- Favicon -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         /* General Styling */
@@ -23,6 +24,15 @@
             font-size: 24px;
             color: #0f0;
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header img {
+            width: 100px; /* Adjust logo size */
+            vertical-align: middle;
+            margin-right: 10px;
         }
 
         /* Navigation */
@@ -50,6 +60,13 @@
 
         button:hover {
             background-color: #0a0;
+        }
+
+        /* Homepage */
+        #home {
+            display: block;
+            padding: 50px;
+            font-size: 30px;
         }
 
         /* Sections */
@@ -112,8 +129,6 @@
             border-radius: 5px;
             cursor: pointer;
         }
-
-        
 
         /* Mobile Responsiveness */
         @media screen and (max-width: 768px) {
@@ -178,18 +193,26 @@
 </head>
 <body>
     <header>
+        <img src="logo.png" alt="TrackPro Logo">
         <h1>TrackPro</h1>
     </header>
 
     <nav>
+        <button onclick="showSection('home')">Home</button>
         <button onclick="showSection('workouts')">Workouts</button>
         <button onclick="showSection('diet')">Diet Plan</button>
         <button onclick="showSection('goals')">Goals</button>
     </nav>
 
     <main>
+        <!-- Home Page -->
+        <section id="home" class="active">
+            <h2>Welcome to TrackPro!</h2>
+            <p>Your personal fitness planner. Get started with your workouts and meal planning!</p>
+        </section>
+
         <!-- Workouts Section -->
-        <section id="workouts" class="active">
+        <section id="workouts">
             <h2>Workout Plan</h2>
             <select id="workoutDay">
                 <option value="Monday">Monday</option>
@@ -203,6 +226,7 @@
             <input type="text" id="workoutInput" placeholder="Exercise">
             <input type="number" id="weightInput" placeholder="Weight (lbs)">
             <input type="number" id="repsInput" placeholder="Reps">
+            <input type="number" id="setsInput" placeholder="Sets">
             <button onclick="addWorkout()">Add Workout</button>
 
             <div class="calendar">
@@ -235,13 +259,21 @@
         </section>
     </main>
 
-   
-
     <script>
+        // Initialize data from local storage on page load
+        window.onload = function () {
+            loadDataFromStorage();
+        };
+
         // Show section based on button click
         function showSection(sectionId) {
             document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
             document.getElementById(sectionId).classList.add("active");
+
+            // Hide the welcome message on non-home pages
+            if (sectionId !== 'home') {
+                document.getElementById('home').classList.remove('active');
+            }
         }
 
         // Add workout
@@ -250,58 +282,59 @@
             let exercise = document.getElementById("workoutInput").value;
             let weight = document.getElementById("weightInput").value;
             let reps = document.getElementById("repsInput").value;
+            let sets = document.getElementById("setsInput").value;
 
-            if (exercise.trim() !== "" && weight.trim() !== "" && reps.trim() !== "") {
+            if (exercise.trim() !== "" && weight.trim() !== "" && reps.trim() !== "" && sets.trim() !== "") {
                 let dayContainer = document.getElementById(day);
                 let div = document.createElement("div");
                 div.classList.add("workout-item");
-                div.innerHTML = `<span>${exercise} - ${weight} lbs - ${reps} reps</span>
+                div.innerHTML = `<span>${exercise} - ${weight} lbs - ${reps} reps - ${sets} sets</span>
                                 <button class="delete-btn" onclick="deleteWorkout(this)">🗑️</button>`;
                 dayContainer.appendChild(div);
-                saveWorkouts();
 
-                // Clear inputs
-                document.getElementById("workoutInput").value = "";
-                document.getElementById("weightInput").value = "";
-                document.getElementById("repsInput").value = "";
+                saveWorkoutData();
             }
         }
 
-        // Save workouts to localStorage
-        function saveWorkouts() {
-            let workouts = {};
-            document.querySelectorAll('.calendar .day').forEach(day => {
-                let dayName = day.id;
-                workouts[dayName] = [];
-                day.querySelectorAll('.workout-item').forEach(item => {
-                    let workoutText = item.querySelector('span').textContent;
-                    workouts[dayName].push(workoutText);
-                });
-            });
-            localStorage.setItem('workouts', JSON.stringify(workouts));
+        // Delete workout
+        function deleteWorkout(button) {
+            button.parentElement.remove();
+            saveWorkoutData();
         }
 
-        // Load workouts from localStorage
-        function loadWorkouts() {
-            let savedWorkouts = JSON.parse(localStorage.getItem('workouts'));
-            if (savedWorkouts) {
-                document.querySelectorAll('.calendar .day').forEach(day => {
-                    let header = day.querySelector('h3');
-                    day.innerHTML = '';
-                    day.appendChild(header);
+        // Save workout data to local storage
+        function saveWorkoutData() {
+            const workouts = {};
+            document.querySelectorAll(".calendar .day").forEach(dayDiv => {
+                let day = dayDiv.id;
+                workouts[day] = [];
+                dayDiv.querySelectorAll(".workout-item").forEach(workoutDiv => {
+                    workouts[day].push(workoutDiv.innerText);
                 });
-                
-                for (let day in savedWorkouts) {
+            });
+
+            localStorage.setItem("workouts", JSON.stringify(workouts));
+        }
+
+        // Load workout data from local storage
+        function loadDataFromStorage() {
+            let workouts = JSON.parse(localStorage.getItem("workouts"));
+            if (workouts) {
+                for (let day in workouts) {
                     let dayContainer = document.getElementById(day);
-                    savedWorkouts[day].forEach(exercise => {
+                    workouts[day].forEach(workout => {
                         let div = document.createElement("div");
                         div.classList.add("workout-item");
-                        div.innerHTML = `<span>${exercise}</span>
-                                       <button class="delete-btn" onclick="deleteWorkout(this)">🗑️</button>`;
+                        div.innerHTML = `<span>${workout}</span>
+                                        <button class="delete-btn" onclick="deleteWorkout(this)">🗑️</button>`;
                         dayContainer.appendChild(div);
                     });
                 }
             }
+
+            // Load meals and goals from localStorage
+            loadMeals();
+            loadGoals();
         }
 
         // Add meal
@@ -311,41 +344,42 @@
             let protein = document.getElementById("proteinInput").value;
 
             if (meal.trim() !== "" && calories.trim() !== "" && protein.trim() !== "") {
-                let div = document.createElement("div");
-                div.classList.add("meal-item");
-                div.innerHTML = `<span>${meal} - ${calories} calories - ${protein}g protein</span>
-                                <button class="delete-btn" onclick="deleteMeal(this)">🗑️</button>`;
-                document.getElementById("mealList").appendChild(div);
-                saveMeals();
+                let mealDiv = document.createElement("div");
+                mealDiv.classList.add("meal-item");
+                mealDiv.innerHTML = `${meal} - ${calories} cal - ${protein}g protein
+                                     <button class="delete-btn" onclick="deleteMeal(this)">🗑️</button>`;
+                document.getElementById("mealList").appendChild(mealDiv);
 
-                // Clear inputs
-                document.getElementById("mealInput").value = "";
-                document.getElementById("caloriesInput").value = "";
-                document.getElementById("proteinInput").value = "";
+                saveMeals();
             }
         }
 
-        // Save meals to localStorage
-        function saveMeals() {
-            let meals = [];
-            document.querySelectorAll('.meal-item').forEach(item => {
-                let mealText = item.querySelector('span').textContent;
-                meals.push(mealText);
-            });
-            localStorage.setItem('meals', JSON.stringify(meals));
+        // Delete meal
+        function deleteMeal(button) {
+            button.parentElement.remove();
+            saveMeals();
         }
 
-        // Load meals from localStorage
+        // Save meal data to local storage
+        function saveMeals() {
+            let meals = [];
+            document.querySelectorAll(".meal-item").forEach(mealDiv => {
+                let mealData = mealDiv.innerText.split(" - ");
+                meals.push({ name: mealData[0], calories: mealData[1], protein: mealData[2] });
+            });
+            localStorage.setItem("meals", JSON.stringify(meals));
+        }
+
+        // Load meals from local storage
         function loadMeals() {
-            let savedMeals = JSON.parse(localStorage.getItem('meals'));
-            if (savedMeals) {
-                document.getElementById("mealList").innerHTML = '';
-                savedMeals.forEach(meal => {
-                    let div = document.createElement("div");
-                    div.classList.add("meal-item");
-                    div.innerHTML = `<span>${meal}</span>
-                                   <button class="delete-btn" onclick="deleteMeal(this)">🗑️</button>`;
-                    document.getElementById("mealList").appendChild(div);
+            let meals = JSON.parse(localStorage.getItem("meals"));
+            if (meals) {
+                meals.forEach(meal => {
+                    let mealDiv = document.createElement("div");
+                    mealDiv.classList.add("meal-item");
+                    mealDiv.innerHTML = `${meal.name} - ${meal.calories} - ${meal.protein}
+                                         <button class="delete-btn" onclick="deleteMeal(this)">🗑️</button>`;
+                    document.getElementById("mealList").appendChild(mealDiv);
                 });
             }
         }
@@ -353,67 +387,43 @@
         // Add goal
         function addGoal() {
             let goal = document.getElementById("goalInput").value;
-
             if (goal.trim() !== "") {
-                let div = document.createElement("div");
-                div.classList.add("goal-item");
-                div.innerHTML = `<span>${goal}</span>
-                                <button class="delete-btn" onclick="deleteGoal(this)">🗑️</button>`;
-                document.getElementById("goalList").appendChild(div);
+                let goalDiv = document.createElement("div");
+                goalDiv.classList.add("goal-item");
+                goalDiv.innerHTML = `${goal} <button class="delete-btn" onclick="deleteGoal(this)">🗑️</button>`;
+                document.getElementById("goalList").appendChild(goalDiv);
+
                 saveGoals();
-
-                // Clear input
-                document.getElementById("goalInput").value = "";
             }
         }
 
-        // Save goals to localStorage
-        function saveGoals() {
-            let goals = [];
-            document.querySelectorAll('.goal-item').forEach(item => {
-                let goalText = item.querySelector('span').textContent;
-                goals.push(goalText);
-            });
-            localStorage.setItem('goals', JSON.stringify(goals));
-        }
-
-        // Load goals from localStorage
-        function loadGoals() {
-            let savedGoals = JSON.parse(localStorage.getItem('goals'));
-            if (savedGoals) {
-                document.getElementById("goalList").innerHTML = '';
-                savedGoals.forEach(goal => {
-                    let div = document.createElement("div");
-                    div.classList.add("goal-item");
-                    div.innerHTML = `<span>${goal}</span>
-                                   <button class="delete-btn" onclick="deleteGoal(this)">🗑️</button>`;
-                    document.getElementById("goalList").appendChild(div);
-                });
-            }
-        }
-
-        // Delete functions
-        function deleteWorkout(button) {
-            button.parentElement.remove();
-            saveWorkouts();
-        }
-
-        function deleteMeal(button) {
-            button.parentElement.remove();
-            saveMeals();
-        }
-
+        // Delete goal
         function deleteGoal(button) {
             button.parentElement.remove();
             saveGoals();
         }
 
-        // Initialize data
-        window.onload = function() {
-            loadWorkouts();
-            loadMeals();
-            loadGoals();
-        };
+        // Save goal data to local storage
+        function saveGoals() {
+            let goals = [];
+            document.querySelectorAll(".goal-item").forEach(goalDiv => {
+                goals.push(goalDiv.innerText);
+            });
+            localStorage.setItem("goals", JSON.stringify(goals));
+        }
+
+        // Load goals from local storage
+        function loadGoals() {
+            let goals = JSON.parse(localStorage.getItem("goals"));
+            if (goals) {
+                goals.forEach(goal => {
+                    let goalDiv = document.createElement("div");
+                    goalDiv.classList.add("goal-item");
+                    goalDiv.innerHTML = `${goal} <button class="delete-btn" onclick="deleteGoal(this)">🗑️</button>`;
+                    document.getElementById("goalList").appendChild(goalDiv);
+                });
+            }
+        }
     </script>
 </body>
 </html>
